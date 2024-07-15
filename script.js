@@ -1,47 +1,50 @@
-const nameInput = document.querySelector("#item-name-input");
-const priceInput = document.querySelector("#item-price-input");
-const addBtn = document.querySelector("#add");
-const tbody = document.querySelector("#item-list-body");
-const grandTotal = document.querySelector("#total");
+ document.addEventListener('DOMContentLoaded', function() {
+            const itemNameInput = document.getElementById('item-name-input');
+            const itemPriceInput = document.getElementById('item-price-input');
+            const itemQtyInput = document.getElementById('item-qty-input');
+            const addButton = document.getElementById('add');
+            const itemListBody = document.getElementById('item-list-body');
+            const grandTotalSpan = document.getElementById('grand-total');
 
-let itemCounter = 0;
+            addButton.addEventListener('click', function() {
+                const itemName = itemNameInput.value.trim();
+                const itemPrice = parseFloat(itemPriceInput.value);
+                const itemQty = parseInt(itemQtyInput.value);
 
-addBtn.addEventListener("click", () => {
-  const name = nameInput.value.trim();
-  const price = parseFloat(priceInput.value);
+                // Validate inputs
+                if (itemName === '' || isNaN(itemPrice) || itemPrice <= 0 || isNaN(itemQty) || itemQty <= 0) {
+                    alert('Please enter valid item details.');
+                    return;
+                }
 
-  // Validate inputs
-  if (!name || isNaN(price) || price <= 0) {
-    alert('Please enter a valid item name and price.');
-    return;
-  }
+                // Calculate total price for the item
+                const totalPrice = itemPrice * itemQty;
 
-  // Create a new table row
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td id="item-${itemCounter}">${name}</td>
-    <td id="price-${itemCounter}">${price.toFixed(2)}</td>
-  `;
+                // Create new table row
+                const newRow = document.createElement('tr');
+                const itemNameCell = document.createElement('td');
+                itemNameCell.textContent = itemName;
+                const itemPriceCell = document.createElement('td');
+                itemPriceCell.textContent = `$${itemPrice.toFixed(2)}`;
+                const itemQtyCell = document.createElement('td');
+                itemQtyCell.textContent = itemQty.toString();
+                const itemTotalCell = document.createElement('td');
+                itemTotalCell.textContent = `$${totalPrice.toFixed(2)}`;
 
-  // Append the new row to the tbody
-  tbody.appendChild(tr);
+                newRow.appendChild(itemNameCell);
+                newRow.appendChild(itemPriceCell);
+                newRow.appendChild(itemQtyCell);
+                newRow.appendChild(itemTotalCell);
+                itemListBody.appendChild(newRow);
 
-  // Increment the counter for unique IDs
-  itemCounter++;
+                // Update grand total
+                const currentTotal = parseFloat(grandTotalSpan.textContent);
+                const newTotal = currentTotal + totalPrice;
+                grandTotalSpan.textContent = newTotal.toFixed(2);
 
-  // Clear the input fields
-  nameInput.value = '';
-  priceInput.value = '';
-
-  // Update the grand total
-  updateGrandTotal();
-});
-
-function updateGrandTotal() {
-  let grandTotalValue = 0;
-  const itemPrices = document.querySelectorAll('#item-list-body td[id^="price-"]');
-  itemPrices.forEach(price => {
-    grandTotalValue += parseFloat(price.textContent);
-  });
-  grandTotal.textContent = `Grand Total: ${grandTotalValue.toFixed(2)}`;
-}
+                // Clear input fields
+                itemNameInput.value = '';
+                itemPriceInput.value = '';
+                itemQtyInput.value = '1';
+            });
+        });
